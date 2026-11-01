@@ -3,7 +3,6 @@ import io
 import time
 import streamlit as st
 import speech_recognition as sr
-from st_audiorec import st_audiorec
 import recipes
 
 st.set_page_config(
@@ -24,7 +23,6 @@ CATEGORIES = {
     "выпечка": "🧁 Выпечка",
 }
 
-# Инициализация состояния (текст, счетчики для сброса)
 if "p_input_text" not in st.session_state:
     st.session_state.p_input_text = ""
 if "clear_counter" not in st.session_state:
@@ -51,7 +49,6 @@ with st.sidebar:
 st.title("🍳 Кулинарный помощник")
 st.caption("Введите продукты — получите рецепты с пошаговой инструкцией")
 
-# Кнопки сверху
 c1, c2, _ = st.columns([1, 1, 4])
 with c1:
     if st.button("🔄 Обновить", use_container_width=True):
@@ -61,36 +58,31 @@ with c2:
         st.session_state.clear_counter += 1
         st.session_state.p_input_text = ""
 
-# ==================== ГОЛОСОВОЙ ВВОД ====================
+# ==================== ГОЛОСОВОЙ ВВОД (нативный) ====================
 st.markdown("### 🎤 Голосовой ввод")
-st.caption("Нажмите на микрофон, перечислите продукты (например: *яйца, помидоры, лук*), затем нажмите стоп (квадрат).")
-# Компонент записи звука
-wav_audio_data = st_audiorec()
+st.caption("Нажмите на микрофон, перечислите продукты (например: *яйца, помидоры, лук*). Запись остановится по кнопке.")
 
-if wav_audio_data is not None:
+# Встроенный компонент Streamlit 1.39+
+audio_value = st.audio_input("Записать голос", key=f"audio_{st.session_state.voice_counter}")
+
+if audio_value is not None:
     try:
         r = sr.Recognizer()
-        audio_file = io.BytesIO(wav_audio_data)
-        with sr.AudioFile(audio_file) as source:
+        with sr.AudioFile(io.BytesIO(audio_value.getvalue())) as source:
             audio = r.record(source)
-        
-        # Распознаем русскую речь через бесплатный API Google
         text = r.recognize_google(audio, language="ru-RU")
-        
-        # Обновляем текст и счетчик, чтобы поле ввода обновилось
         st.session_state.p_input_text = text
         st.session_state.voice_counter += 1
         st.success(f"✅ Распознано: **{text}**")
-        # Даем Streamlit команду перерисовать интерфейс
         st.rerun()
-        
     except sr.UnknownValueError:
-        st.error("😔 Не удалось разобрать речь. Попробуйте сказать четче.")
-    except sr.RequestError:
-        st.error("⚠️ Ошибка сервиса распознавания. Проверьте интернет.")
+        st.error("😔 Не удалось разобрать речь. Попробуйте сказать чётче.")
+    except sr.RequestError as e:
+        st.error(f"⚠️ Ошибка сервиса распознавания: {e}")
+    except Exception as e:
+        st.error(f"⚠️ Ошибка: {e}")
 
 # ==================== ПОЛЕ ВВОДА ====================
-# Уникальный ключ зависит от кнопки "Очистить" и от голосового ввода
 mode = None if selected == "все" else selected
 
 products_input = st.text_input(
@@ -101,7 +93,6 @@ products_input = st.text_input(
     help="Нажмите Enter после ввода",
 )
 
-# Если пользователь ввел текст вручную (не голосом), синхронизируем
 if products_input != st.session_state.p_input_text:
     st.session_state.p_input_text = products_input
 
@@ -124,17 +115,17 @@ if products_input.strip():
                 label = f"{i}. {recipe['name']} — {percent}%"
                 if not missing:
                     label += " ✅ всё есть"
-                
+
                 with st.expander(label, expanded=(i == 1)):
                     st.markdown(f"**⏱ {recipe['time']}  |  🍴 {recipe['servings']} порц.**")
-                    
+
                     st.markdown("**📋 Ингредиенты:**")
                     for ing in recipe["ingredients"]:
                         if recipes.normalize(ing) in products:
                             st.markdown(f"- ✅ {ing}")
                         else:
                             st.markdown(f"- ❌ {ing}")
-                    
+
                     if recipe["optional"]:
                         have_opt = [
                             o for o in recipe["optional"]
@@ -142,10 +133,10 @@ if products_input.strip():
                         ]
                         if have_opt:
                             st.caption(f"У вас есть для вкуса: {', '.join(have_opt)}")
-                    
+
                     if missing:
                         st.warning(f"⚠️ Не хватает: {', '.join(sorted(missing))}")
-                    
+
                     st.markdown("**👨‍🍳 Приготовление:**")
                     for n, step in enumerate(recipe["steps"], 1):
                         st.markdown(f"{n}. {step}")
