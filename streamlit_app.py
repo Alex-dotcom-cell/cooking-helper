@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Веб-версия кулинарного помощника на Streamlit."""
 
-import importlib
 import sys
 import time
 
 import streamlit as st
 
-# Сбрасываем кэш модулей — чтобы правки recipes.py подхватывались при обновлении
+# Сброс кэша модулей — чтобы правки рецептов подхватывались
 for _mod in list(sys.modules.keys()):
     if _mod in ("recipes", "sweet_recipes", "drinks_recipes",
                 "preserves_recipes", "world_recipes",
@@ -34,37 +33,22 @@ CATEGORIES = {
     "выпечка": "🧁 Выпечка",
 }
 
-# Инициализация состояния
+# Состояние
+if "clear_counter" not in st.session_state:
+    st.session_state.clear_counter = 0
 if "last_refresh" not in st.session_state:
     st.session_state.last_refresh = time.strftime("%H:%M:%S")
-if "products_input" not in st.session_state:
-    st.session_state.products_input = ""
 
-# ==================== SIDEBAR ====================
+# ==================== SIDEBAR (без кнопок!) ====================
 
 with st.sidebar:
-    st.header("🎛 Управление")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔄 Обновить", use_container_width=True, type="primary"):
-            st.session_state.last_refresh = time.strftime("%H:%M:%S")
-            st.rerun()
-    with col2:
-        if st.button("🗑 Очистить", use_container_width=True):
-            st.session_state.products_input = ""
-            st.rerun()
-
-    st.divider()
-
-    st.subheader("Категория")
+    st.header("Категория")
     selected = st.radio(
         "Выберите:",
         list(CATEGORIES.keys()),
         format_func=lambda x: CATEGORIES[x],
         label_visibility="collapsed",
     )
-
     st.divider()
     st.caption(f"📚 В базе: **{len(recipes.RECIPES)}** рецептов")
     st.caption(f"🕐 Обновлено: **{st.session_state.last_refresh}**")
@@ -74,22 +58,25 @@ with st.sidebar:
 st.title("🍳 Кулинарный помощник")
 st.caption("Введите продукты — получите рецепты с пошаговой инструкцией")
 
-# Кнопки сверху (дублирующие) — для удобства на телефоне
-top_col1, top_col2, _ = st.columns([1, 1, 4])
-with top_col1:
-    if st.button("🔄", help="Обновить", use_container_width=True):
+# Кнопки сверху — БЕЗ st.columns, чтобы не было бага
+col_refresh, col_clear, col_spacer = st.columns([1, 1, 4])
+
+with col_refresh:
+    if st.button("🔄 Обновить", use_container_width=True):
         st.session_state.last_refresh = time.strftime("%H:%M:%S")
         st.rerun()
-with top_col2:
-    if st.button("🗑", help="Очистить", use_container_width=True):
-        st.session_state.products_input = ""
+
+with col_clear:
+    if st.button("🗑 Очистить", use_container_width=True):
+        st.session_state.clear_counter += 1
         st.rerun()
 
 mode = None if selected == "все" else selected
 
+# Ключ зависит от счётчика — при "Очистить" виджет пересоздаётся пустым
 products_input = st.text_input(
     "🥕 Ваши продукты (через запятую):",
-    key="products_input",
+    key=f"products_input_{st.session_state.clear_counter}",
     placeholder="яйца, помидоры, лук, сыр",
     help="Нажмите Enter после ввода",
 )
@@ -147,5 +134,5 @@ else:
 st.divider()
 st.caption(
     "💡 **Совет:** после `git push` с новыми рецептами "
-    "подождите ~1 минуту и нажмите **🔄 Обновить** — новые рецепты появятся."
+    "подождите ~1 минуту и нажмите **🔄 Обновить**."
 )
