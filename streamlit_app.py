@@ -20,6 +20,7 @@ for _r in recipes.RECIPES:
 CATEGORIES = {
     "все": "📖 Все рецепты",
     "основное": "🍲 Обычные блюда",
+    "салаты": "🥗 Салаты",
     "сладкое": "🍰 Сладкое",
     "напитки": "🥤 Напитки",
     "заготовки": "🥗 Заготовки",
@@ -35,13 +36,11 @@ NAME_SEARCH_PREFIXES = (
     "приготовить ", "приготовь ", "хочу ", "покажи ", "дай ",
 )
 
-# ============================================================
-# РУЧНЫЕ КОЛИЧЕСТВА (для популярных рецептов)
-# ============================================================
+# Триггеры для категории "салаты"
+SALAD_ONLY_COMMANDS = ("салат", "салаты", "салатик", "салатика")
+SALAD_SEARCH_PREFIXES = ("сделать салат ", "хочу салат ", "салат из ", "салат с ", "салат ")
+
 MANUAL_QUANTITIES = {
-    "Лагман узбекский": {"мясо": "500 г", "лапша": "300 г", "морковь": "2 шт", "лук": "2 шт", "помидоры": "3 шт", "перец": "1 шт", "картошка": "3 шт", "чеснок": "4 зубчика", "масло растительное": "100 мл"},
-    "Паста с песто": {"макароны": "200 г", "базилик": "50 г", "чеснок": "2 зубчика", "сыр": "50 г", "орехи": "30 г", "масло оливковое": "100 мл"},
-    "Салат Оливье": {"картошка": "3-4 шт", "морковь": "1-2 шт", "яйца": "3-4 шт", "колбаса": "200-300 г", "огурцы солёные": "3-4 шт", "горошек": "400 г (1 банка)", "майонез": "200 г"},
     "Борщ": {"мясо": "500 г", "свёкла": "2 шт", "капуста": "300 г",
              "картошка": "4 шт", "морковь": "1 шт", "лук": "2 шт"},
     "Яичница с помидорами и луком": {"яйца": "4 шт", "помидоры": "3 шт", "лук": "1 шт"},
@@ -58,20 +57,36 @@ MANUAL_QUANTITIES = {
     "Куриный суп с картошкой и морковью": {"курица": "500 г", "картошка": "3-4 шт", "морковь": "1 шт", "лук": "1 шт"},
     "Крем-брюле": {"сливки": "400 мл", "яйца": "4 желтка", "сахар": "4 ст. л."},
     "Курица с картошкой в духовке": {"курица": "800 г", "картошка": "6-7 шт", "лук": "2 шт"},
+    "Салат Оливье": {"картошка": "3-4 шт", "морковь": "1-2 шт", "яйца": "3-4 шт", "колбаса": "200-300 г", "огурцы солёные": "3-4 шт", "горошек": "400 г (1 банка)", "майонез": "200 г"},
+    "Паста с песто": {"макароны": "200 г", "базилик": "50 г", "чеснок": "2 зубчика", "сыр": "50 г", "орехи": "30 г", "масло оливковое": "100 мл"},
+    "Лагман узбекский": {"мясо": "500 г", "лапша": "300 г", "морковь": "2 шт", "лук": "2 шт", "помидоры": "3 шт", "перец": "1 шт", "картошка": "3 шт", "чеснок": "4 зубчика", "масло растительное": "100 мл"},
+    "Салат из свежей капусты с морковью": {"капуста": "400 г", "морковь": "1 шт", "лук": "1 шт", "масло растительное": "2 ст. л."},
+    "Салат «Витаминный» из капусты и яблока": {"капуста": "300 г", "морковь": "1 шт", "яблоки": "1 шт", "лимон": "0,5 шт", "масло растительное": "2 ст. л."},
+    "Салат из капусты с огурцом": {"капуста": "400 г", "огурцы": "2 шт", "лук": "1 шт", "масло растительное": "2 ст. л."},
+    "Морковь по-корейски": {"морковь": "500 г", "чеснок": "3 зубчика", "масло растительное": "4 ст. л.", "уксус": "1 ст. л.", "сахар": "1 ст. л."},
+    "Салат «Щётка» из капусты и свёклы": {"капуста": "300 г", "морковь": "1 шт", "свёкла": "1 шт", "лук": "0,5 шт", "масло оливковое": "2 ст. л."},
+    "Салат из свежих овощей с луком": {"огурцы": "2 шт", "помидоры": "3 шт", "лук": "1 шт", "перец": "1 шт"},
+    "Салат «Весенний» с редисом и яйцом": {"редис": "200 г", "огурцы": "2 шт", "яйца": "2 шт", "зелень": "1 пучок"},
+    "Салат из капусты с кукурузой и сухариками": {"капуста": "300 г", "кукуруза": "200 г", "сухарики": "100 г", "майонез": "100 г", "морковь": "1 шт"},
+    "Салат «Цезарь» с курицей": {"курица": "300 г", "салат": "100 г", "хлеб": "2 ломтика", "сыр": "50 г", "майонез": "100 г"},
+    "Салат «Мимоза»": {"рыба консервированная": "1 банка", "яйца": "4 шт", "картошка": "3 шт", "морковь": "2 шт", "лук": "1 шт", "майонез": "150 г"},
+    "Салат из моркови с чесноком и сыром": {"морковь": "3 шт", "чеснок": "2 зубчика", "сыр": "100 г", "майонез": "100 г"},
+    "Салат из капусты и огурца с уксусом": {"капуста": "400 г", "огурцы": "2 шт", "морковь": "1 шт", "уксус": "1 ст. л."},
+    "Салат из огурцов и помидоров": {"огурцы": "2 шт", "помидоры": "3 шт", "лук": "1 шт", "зелень": "1 пучок"},
+    "Греческий салат": {"помидоры": "3 шт", "огурцы": "2 шт", "сыр": "150 г", "лук": "1 шт", "оливки": "50 г"},
+    "Винегрет": {"свёкла": "1 шт", "морковь": "2 шт", "картошка": "3 шт", "огурцы солёные": "2 шт", "лук": "1 шт"},
 }
 
+
 def get_quantity(ingredient, recipe):
-    """Возвращает количество ингредиента: сначала ручное, потом из шагов."""
     manual = MANUAL_QUANTITIES.get(recipe["name"], {})
     if ingredient in manual:
         return manual[ingredient]
-    
     ing = ingredient.lower()
     steps_text = " ".join(recipe["steps"]).lower()
     stem = re.sub(r"(ы|и|а|я|у|ю|е|ой|ей|ам|ям|ов|ев|ах|ях)$", "", ing)
     if len(stem) < 3:
         stem = ing
-    
     for m in re.finditer(re.escape(stem), steps_text):
         start = max(0, m.start() - 60)
         end = min(len(steps_text), m.end() + 60)
@@ -92,16 +107,13 @@ def _fmt(num):
 
 
 def scale_quantity(qty_str, coeff):
-    """Умножает количество на коэффициент."""
     if not qty_str or coeff == 1:
         return qty_str
-    # диапазон "3-4 шт"
     m = re.match(r"(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)\s*(.*)", qty_str)
     if m:
         lo = float(m.group(1).replace(",", ".")) * coeff
         hi = float(m.group(2).replace(",", ".")) * coeff
         return f"{_fmt(lo)}-{_fmt(hi)} {m.group(3)}".strip()
-    # одиночное число
     m = re.match(r"(\d+(?:[.,]\d+)?)\s*(.*)", qty_str)
     if m:
         num = float(m.group(1).replace(",", ".")) * coeff
@@ -110,11 +122,29 @@ def scale_quantity(qty_str, coeff):
 
 
 # ============================================================
-# ПОИСК ПО НАЗВАНИЮ
+# РАСПОЗНАВАНИЕ КОМАНД
 # ============================================================
 def is_name_search(text):
     t = text.lower().strip()
     return any(t.startswith(p) for p in NAME_SEARCH_PREFIXES)
+
+
+def is_salad_only_command(text):
+    return text.lower().strip() in SALAD_ONLY_COMMANDS
+
+
+def is_salad_search(text):
+    t = text.lower().strip()
+    return any(t.startswith(p) for p in SALAD_SEARCH_PREFIXES) and len(t.split()) > 2
+
+
+def extract_salad_products(text):
+    t = text.lower().strip()
+    for prefix in SALAD_SEARCH_PREFIXES:
+        if t.startswith(prefix):
+            return t[len(prefix):].strip()
+    return t
+
 
 def clean_query(text):
     t = text.lower().strip()
@@ -123,6 +153,7 @@ def clean_query(text):
             t = t[len(prefix):].strip()
             break
     return re.sub(r"[^а-яёa-z0-9 ]", "", t).strip()
+
 
 def _words_match(q, n):
     if not q or not n:
@@ -138,6 +169,7 @@ def _words_match(q, n):
         return False
     prefix_len = max(3, min_len - 2)
     return q[:prefix_len] == n[:prefix_len]
+
 
 def find_by_name(query):
     q = clean_query(query)
@@ -167,51 +199,38 @@ def find_by_name(query):
     return results
 
 
-# ============================================================
-# РЕНДЕР РЕЦЕПТА
-# ============================================================
 def render_recipe(recipe, percent=None, missing=None, have_products=None,
                   expanded=False, uid=0):
     base_servings = int(recipe.get("servings", 2))
-    
     title = recipe["name"]
     if percent is not None:
         title = f"{title} — {percent}%"
         if not missing:
             title += " ✅ всё есть"
-    
+
     with st.expander(title, expanded=expanded):
-        # Метрики
         col_t, col_s = st.columns(2)
         with col_t:
             st.metric("⏱ Время", recipe.get("time", "—"))
         with col_s:
             st.metric("🍴 Порций (по рецепту)", base_servings)
-        
-        # Пересчёт порций — СВЕРХУ, чтобы количество везде было пересчитано
+
         st.markdown("**⚖️ Готовлю на (порций):**")
         new_servings = st.number_input(
-            "Порций:",
-            min_value=1, max_value=100,
+            "Порций:", min_value=1, max_value=100,
             value=base_servings, step=1,
             key=f"serv_{uid}_{recipe['name']}",
             label_visibility="collapsed",
         )
-        
         coeff = new_servings / base_servings
         if coeff == 1:
             st.caption(f"✅ Рецепт на **{base_servings} порц.** — количества без изменений.")
         else:
-            st.info(
-                f"💡 Коэффициент **× {coeff:.2f}** "
-                f"(было {base_servings} → стало {new_servings} порц.)"
-            )
-        
-        # Ингредиенты с количествами
+            st.info(f"💡 Коэффициент **× {coeff:.2f}** (было {base_servings} → стало {new_servings} порц.)")
+
         st.markdown("**📋 Ингредиенты:**")
         for ing in recipe["ingredients"]:
             qty = get_quantity(ing, recipe)
-            
             if qty:
                 if coeff != 1:
                     scaled = scale_quantity(qty, coeff)
@@ -220,27 +239,25 @@ def render_recipe(recipe, percent=None, missing=None, have_products=None,
                     qty_str = f"**{qty}**"
             else:
                 qty_str = "*по вкусу*"
-            
+
             if have_products is not None:
                 mark = "✅" if recipes.normalize(ing) in have_products else "❌"
                 st.markdown(f"- {mark} {qty_str} — **{ing}**")
             else:
                 st.markdown(f"- {qty_str} — **{ing}**")
-        
+
         if recipe.get("optional"):
             st.caption(f"Дополнительно: {', '.join(recipe['optional'])}")
-        
         if missing:
             st.warning(f"⚠️ Не хватает: {', '.join(sorted(missing))}")
-        
-        # Приготовление
+
         st.markdown("**👨‍🍳 Приготовление:**")
         for n, step in enumerate(recipe["steps"], 1):
             st.markdown(f"{n}. {step}")
 
 
 # ============================================================
-# ИНИЦИАЛИЗАЦИЯ ИНТЕРФЕЙСА
+# ИНИЦИАЛИЗАЦИЯ
 # ============================================================
 for key, default in [
     ("p_input_text", ""),
@@ -276,7 +293,7 @@ with c2:
         st.session_state.p_input_text = ""
 
 st.markdown("### 🎤 Голосовой ввод")
-st.caption("Скажите: «*яйца, помидоры, лук*» — или «*найди борщ*».")
+st.caption("Скажите: «*яйца, помидоры, лук*» или «*салат капуста, морковь*».")
 
 audio_value = st.audio_input("Записать голос", key=f"audio_{st.session_state.voice_counter}")
 
@@ -303,17 +320,48 @@ products_input = st.text_input(
     "🥕 Ваши продукты (или название блюда):",
     value=st.session_state.p_input_text,
     key=f"p_input_{st.session_state.clear_counter}_{st.session_state.voice_counter}",
-    placeholder="яйца, помидоры, лук  ИЛИ  найди борщ",
+    placeholder="яйца, помидоры, лук  ИЛИ  найди борщ  ИЛИ  салат капуста, морковь",
 )
 
 if products_input != st.session_state.p_input_text:
     st.session_state.p_input_text = products_input
 
+# ============================================================
+# ОБРАБОТКА ВВОДА
+# ============================================================
 if products_input.strip():
-    if is_name_search(products_input):
-        query_clean = clean_query(products_input)
+    txt = products_input.strip()
+
+    # 1. Просто "салат" / "салаты" — показать все салаты
+    if is_salad_only_command(txt):
+        salads = [r for r in recipes.RECIPES if r.get("category") == "салаты"]
+        st.success(f"🥗 Все салаты: **{len(salads)}**")
+        for i, recipe in enumerate(salads, 1):
+            render_recipe(recipe, expanded=(i == 1), uid=i)
+
+    # 2. "салат капуста, морковь" — искать по продуктам ТОЛЬКО в салатах
+    elif is_salad_search(txt):
+        salad_products = extract_salad_products(txt)
+        products = recipes.split_products(salad_products)
+        if not products:
+            st.warning("Укажите продукты после слова «салат». Например: `салат капуста, морковь`")
+        else:
+            st.info(f"🥗 Ищу салаты из: **{', '.join(sorted(products))}**")
+            matches = recipes.find_matches(products, "салаты")
+            best = [m for m in matches if m[1] >= 30][:10]
+            if not best:
+                st.error("😔 Салатов из этих продуктов не нашлось.")
+            else:
+                st.success(f"Найдено: **{len(best)}**")
+                for i, (recipe, percent, missing) in enumerate(best, 1):
+                    render_recipe(recipe, percent=percent, missing=missing,
+                                  have_products=products, expanded=(i == 1), uid=i)
+
+    # 3. Поиск по названию блюда ("найди борщ")
+    elif is_name_search(txt):
+        query_clean = clean_query(txt)
         st.info(f"🔍 Ищу блюдо: **{query_clean}**")
-        results = find_by_name(products_input)
+        results = find_by_name(txt)
         if not results:
             st.error(f"😔 Блюдо «{query_clean}» не найдено.")
         elif len(results) == 1:
@@ -323,8 +371,10 @@ if products_input.strip():
             st.success(f"Найдено рецептов: **{len(results)}**")
             for i, (recipe, _) in enumerate(results, 1):
                 render_recipe(recipe, expanded=(i == 1), uid=i)
+
+    # 4. Обычный поиск по продуктам
     else:
-        products = recipes.split_products(products_input)
+        products = recipes.split_products(txt)
         if not products:
             st.warning("Не удалось распознать продукты.")
         else:
@@ -340,8 +390,9 @@ if products_input.strip():
                     render_recipe(recipe, percent=percent, missing=missing,
                                   have_products=products, expanded=(i == 1), uid=i)
 else:
-    st.info("👇 Введите продукты или название блюда — и я подберу рецепты")
-    st.markdown("**Примеры:**")
-    st.markdown("- `яйца, помидоры, лук` — по продуктам")
-    st.markdown("- `найди борщ` — по названию")
-    st.markdown("- `приготовить тирамису` — рецепт блюда")
+    st.info("👇 Введите продукты или название блюда")
+    st.markdown("**Примеры запросов:**")
+    st.markdown("- `капуста, морковь, лук` — рецепты из этих продуктов")
+    st.markdown("- `салат` — все салаты")
+    st.markdown("- `салат капуста, морковь` — только салаты из этих продуктов")
+    st.markdown("- `найди оливье` — по названию")

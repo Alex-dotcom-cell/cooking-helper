@@ -475,7 +475,7 @@ RECIPES = [
     },
     {
         "name": "Салат Оливье",
-        "category": "основное",
+        "category": "салаты",
         "ingredients": ["картошка", "морковь", "яйца", "колбаса", "огурцы солёные", "горошек", "майонез"],
         "optional": ["лук", "соль", "перец"],
         "time": "40 минут",
@@ -937,6 +937,7 @@ _load_category("preserves_recipes", "PRESERVES_RECIPES", "заготовки")
 _load_category("world_recipes", "WORLD_RECIPES", "кухни мира")
 _load_category("sauces_recipes", "SAUCES_RECIPES", "соусы")
 _load_category("bakery_recipes", "BAKERY_RECIPES", "выпечка")
+_load_category("salads_recipes", "SALADS_RECIPES", "салаты")
 print("[i] ИТОГО рецептов в базе: " + str(len(RECIPES)))
 
 
