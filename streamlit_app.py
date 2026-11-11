@@ -17,16 +17,22 @@ for _r in recipes.RECIPES:
     if not _r.get("servings"):
         _r["servings"] = 2
 
+# Считаем количество рецептов в каждой категории
+_cat_counts = {}
+for _r in recipes.RECIPES:
+    _c = _r.get("category", "основное")
+    _cat_counts[_c] = _cat_counts.get(_c, 0) + 1
+
 CATEGORIES = {
-    "все": "📖 Все рецепты",
-    "основное": "🍲 Обычные блюда",
-    "салаты": "🥗 Салаты",
-    "сладкое": "🍰 Сладкое",
-    "напитки": "🥤 Напитки",
-    "заготовки": "🥗 Заготовки",
-    "кухни мира": "🌍 Кухни мира",
-    "соусы": "🥩 Соусы",
-    "выпечка": "🧁 Выпечка",
+    "все":         f"📖 Все рецепты ({len(recipes.RECIPES)})",
+    "основное":    f"🍲 Обычные блюда ({_cat_counts.get('основное', 0)})",
+    "салаты":      f"🥗 Салаты ({_cat_counts.get('салаты', 0)})",
+    "сладкое":     f"🍰 Сладкое ({_cat_counts.get('сладкое', 0)})",
+    "напитки":     f"🥤 Напитки ({_cat_counts.get('напитки', 0)})",
+    "заготовки":   f"🥗 Заготовки ({_cat_counts.get('заготовки', 0)})",
+    "кухни мира":  f"🌍 Кухни мира ({_cat_counts.get('кухни мира', 0)})",
+    "соусы":       f"🥩 Соусы ({_cat_counts.get('соусы', 0)})",
+    "выпечка":     f"🧁 Выпечка ({_cat_counts.get('выпечка', 0)})",
 }
 
 NAME_SEARCH_PREFIXES = (
@@ -390,9 +396,25 @@ if products_input.strip():
                     render_recipe(recipe, percent=percent, missing=missing,
                                   have_products=products, expanded=(i == 1), uid=i)
 else:
-    st.info("👇 Введите продукты или название блюда")
-    st.markdown("**Примеры запросов:**")
-    st.markdown("- `капуста, морковь, лук` — рецепты из этих продуктов")
-    st.markdown("- `салат` — все салаты")
-    st.markdown("- `салат капуста, морковь` — только салаты из этих продуктов")
-    st.markdown("- `найди оливье` — по названию")
+    # Показываем рецепты: либо конкретной категории, либо ВСЕ если selected == "все"
+    if mode:
+        cat_recipes = [r for r in recipes.RECIPES if r.get("category") == mode]
+        header = f"{CATEGORIES[mode]} — **{len(cat_recipes)}** рецептов"
+    else:
+        cat_recipes = list(recipes.RECIPES)
+        header = f"📖 Все рецепты — **{len(cat_recipes)}**"
+
+    if cat_recipes:
+        st.success(header)
+        st.caption("Нажмите на блюдо, чтобы раскрыть рецепт.")
+        for i, recipe in enumerate(cat_recipes, 1):
+            render_recipe(recipe, expanded=False, uid=f"cat_{selected}_{i}")
+    else:
+        st.info(f"В категории {CATEGORIES[selected]} пока нет рецептов.")
+        if cat_recipes:
+            st.success(f"{CATEGORIES[mode]} — **{len(cat_recipes)}** рецептов")
+            st.caption("Нажмите на блюдо, чтобы раскрыть рецепт.")
+            for i, recipe in enumerate(cat_recipes, 1):
+                render_recipe(recipe, expanded=False, uid=f"cat_{mode}_{i}")
+        else:
+            st.info(f"В категории {CATEGORIES[mode]} пока нет рецептов.")
